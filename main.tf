@@ -57,7 +57,7 @@ resource "archive_file" "face_detection_zip" {
 }
 
 resource "yandex_function" "face_detection_func" {
-  name              = "function-homework-2-face-detection"
+  name              = "vvot05-face-detection"
   user_hash         = archive_file.face_detection_zip.output_sha256
   runtime           = "python312"
   entrypoint        = "index.handler"
