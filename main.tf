@@ -49,3 +49,22 @@ resource "yandex_storage_bucket" "bucket" {
   secret_key = yandex_iam_service_account_static_access_key.sa-static-key.secret_key
   bucket     = "vvot05-photo"
 }
+
+resource "archive_file" "face_detection_zip" {
+  type        = "zip"
+  output_path = "face_detection.zip"
+  source_dir  = "face_detection"
+}
+
+resource "yandex_function" "face_detection_func" {
+  name              = "function-homework-2-face-detection"
+  user_hash         = archive_file.face_detection_zip.output_sha256
+  runtime           = "python312"
+  entrypoint        = "index.handler"
+  memory            = 128
+  execution_timeout = "10"
+  content {
+    zip_filename = archive_file.face_detection_zip.output_path
+  }
+  service_account_id = yandex_iam_service_account.sa_homework_2.id
+}
