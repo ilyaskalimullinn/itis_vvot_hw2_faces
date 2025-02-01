@@ -22,6 +22,13 @@ resource "yandex_function" "face_cut_func" {
       bucket = yandex_storage_bucket.bucket_photos.bucket
     }
   }
+  mounts {
+    name = "bucket_faces"
+    mode = "rw"
+    object_storage {
+      bucket = yandex_storage_bucket.bucket_faces.bucket
+    }
+  }
 }
 
 resource "yandex_function_iam_binding" "face_cut_biding_iam" {

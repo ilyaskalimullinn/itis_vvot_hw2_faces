@@ -57,6 +57,12 @@ resource "yandex_storage_bucket" "bucket_photos" {
   bucket     = "vvot05-photo"
 }
 
+resource "yandex_storage_bucket" "bucket_faces" {
+  access_key = yandex_iam_service_account_static_access_key.sa-static-key.access_key
+  secret_key = yandex_iam_service_account_static_access_key.sa-static-key.secret_key
+  bucket     = "vvot05-faces"
+}
+
 resource "yandex_message_queue" "task_queue" {
   name       = "vvot05-task"
   access_key = yandex_iam_service_account_static_access_key.sa-static-key.access_key

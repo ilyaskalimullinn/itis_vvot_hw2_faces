@@ -29,13 +29,13 @@ def handler(event, context):
         faces = find_faces(img_path)
 
         for face in faces:
-            top, right, bottom, left = face.tolist()
+            x, y, w, h = face.tolist()
             message_to_queue = {
                 "image_key": object_id,
-                "top": top,
-                "right": right,
-                "bottom": bottom,
-                "left": left,
+                "x": x,
+                "y": y,
+                "w": w,
+                "h": h,
             }
             messages_to_queue.append(message_to_queue)
 
