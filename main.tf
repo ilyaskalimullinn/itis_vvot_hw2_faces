@@ -68,3 +68,40 @@ resource "yandex_message_queue" "task_queue" {
   access_key = yandex_iam_service_account_static_access_key.sa-static-key.access_key
   secret_key = yandex_iam_service_account_static_access_key.sa-static-key.secret_key
 }
+
+resource "yandex_api_gateway" "faces_api_gateway" {
+  name        = "vvot05-apigw"
+  description = "API Gateway for images of faces"
+  spec        = <<-EOT
+    openapi: "3.0.0"
+    info:
+      version: 1.0.0
+      title: Faces API
+    paths:
+      /:
+        get:
+          summary: Send face photo
+          operationId: face
+          parameters:
+            - name: face
+              in: query
+              description: Image key in faces bucket
+              required: true
+              schema:
+                type: string
+          responses:
+            '200':
+              description: Face photo
+              content:
+                'image/jpeg':
+                  schema:
+                    type: "string"
+                    format: "binary"
+          x-yc-apigateway-integration:
+            type: object_storage
+            bucket: ${yandex_storage_bucket.bucket_faces.id}
+            object: "{face}"
+            presigned_redirect: false
+            service_account_id: ${yandex_iam_service_account.sa_homework_2.id}
+  EOT
+}
