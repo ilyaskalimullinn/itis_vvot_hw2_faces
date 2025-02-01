@@ -212,3 +212,4 @@ terraform.rc
 # End of https://www.toptal.com/developers/gitignore/api/python,terraform
 
 face_detection.zip
+face_cut.zip
