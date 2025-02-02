@@ -22,12 +22,10 @@ resource "yandex_function" "face_cut_func" {
       bucket = yandex_storage_bucket.bucket_photos.bucket
     }
   }
-  mounts {
-    name = "bucket_faces"
-    mode = "rw"
-    object_storage {
-      bucket = yandex_storage_bucket.bucket_faces.bucket
-    }
+  environment = {
+    "SECRET_KEY"   = yandex_message_queue.task_queue.secret_key,
+    "ACCESS_KEY"   = yandex_message_queue.task_queue.access_key,
+    "BUCKET_FACES" = yandex_storage_bucket.bucket_faces.id
   }
 }
 

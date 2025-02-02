@@ -30,7 +30,8 @@ resource "yandex_function" "tg_bot_func" {
   }
   service_account_id = yandex_iam_service_account.sa_homework_2.id
   environment = {
-    "TELEGRAM_BOT_TOKEN" = var.tg_bot_key
+    "TELEGRAM_BOT_TOKEN" = var.tg_bot_key,
+    "API_GATEWAY_URL"    = yandex_api_gateway.faces_api_gateway.domain
   }
   mounts {
     name = "bucket_photos"

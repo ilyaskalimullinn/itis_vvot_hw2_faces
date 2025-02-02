@@ -90,19 +90,24 @@ resource "yandex_api_gateway" "faces_api_gateway" {
               required: true
               schema:
                 type: string
-          responses:
-            '200':
-              description: Face photo
-              content:
-                'image/jpeg':
-                  schema:
-                    type: "string"
-                    format: "binary"
           x-yc-apigateway-integration:
             type: object_storage
             bucket: ${yandex_storage_bucket.bucket_faces.id}
             object: "{face}"
-            presigned_redirect: false
             service_account_id: ${yandex_iam_service_account.sa_homework_2.id}
+      /photo:
+        get:
+          parameters:
+            - name: photo
+              in: query
+              description: Photo
+              required: true
+              schema:
+                type: string
+          x-yc-apigateway-integration:
+            bucket: ${yandex_storage_bucket.bucket_photos.id}
+            type: object_storage
+            service_account_id: ${yandex_iam_service_account.sa_homework_2.id}
+            object: "{photo}"
   EOT
 }
