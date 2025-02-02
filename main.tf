@@ -72,6 +72,7 @@ resource "yandex_message_queue" "task_queue" {
 resource "yandex_api_gateway" "faces_api_gateway" {
   name        = "vvot05-apigw"
   description = "API Gateway for images of faces"
+  folder_id   = var.folder_id
   spec        = <<-EOT
     openapi: "3.0.0"
     info:

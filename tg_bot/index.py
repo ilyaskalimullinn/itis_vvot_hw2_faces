@@ -1,6 +1,9 @@
 import os
 import json
 import requests
+import random
+import binascii
+import base64
 
 
 DEFAULT_RESPONSE = {"statusCode": 200, "body": ""}
@@ -54,19 +57,75 @@ def handler(event, context):
             return DEFAULT_RESPONSE
 
         if text == "/getface":
+            rand_face = get_random_unknown_face()
             send_message(
-                "Вы попросили неотмеченное лицо! Пока это не реализовано, но скоро будет!",
+                f"Вы попросили неотмеченное лицо! Пока без фотки, но вот, что мы бы вам отправили: {rand_face}",
                 message_in,
             )
             return DEFAULT_RESPONSE
 
         if text.startswith("/find "):
             name = text.replace("/find ", "", 1)
-            send_message(f"Вам нужно лицо по имени {name}. Скоро будет!", message_in)
+            photos = find_face_original_photos(name)
+            send_message(
+                (
+                    f"Вам нужно лицо по имени {name}. Скоро будет! "
+                    f"Пока отправляю список названий тех фоток, которые мы бы вам отправили: {photos}"
+                ),
+                message_in,
+            )
             return DEFAULT_RESPONSE
 
         send_message(ERROR_TEXT, message_in)
         return DEFAULT_RESPONSE
 
-    except:
+    except Exception as e:
+        print(e)
         return DEFAULT_RESPONSE
+
+
+def get_random_unknown_face() -> str:
+    unknown_faces = os.listdir("/function/storage/bucket_faces/unknown")
+    return random.choice(unknown_faces)
+
+
+def find_face_original_photos(name: str) -> list[str]:
+    name_hex = encode_string(name)
+    os.makedirs("/function/storage/bucket_faces/known", exist_ok=True)
+    all_faces = os.listdir("/function/storage/bucket_faces/known")
+
+    if name_hex not in all_faces:
+        return []
+
+    known_face_images = os.listdir(f"/function/storage/bucket_faces/known/{name_hex}")
+    original_photo_names = [
+        convert_known_face_to_original_photo(n) for n in known_face_images
+    ]
+    return original_photo_names
+
+
+def convert_known_face_to_original_photo(known_face: str) -> str:
+    """
+    Convert known face name to original photo name.
+    If original photo has name `{original_name}` (including `.jpg` extension),
+    known face will be stored in `known/{face_name}/{original_name}.{random_hex}.jpg`
+
+    So this function gets `{original_name}` from `{original_name}.{random_hex}.jpg`
+
+    Args:
+        known_face (str): known face key (file name)
+
+    Returns:
+        str: original photo key (file name)
+    """
+    name_split = known_face.split(".jpg")
+    original_name = ".jpg".join(name_split[:-2]) + ".jpg"
+    return original_name
+
+
+def encode_string(s: str) -> str:
+    return binascii.hexlify(base64.b64encode(s.encode("utf-8"))).decode("utf-8")
+
+
+def decode_hex(s: str) -> str:
+    return base64.b64decode(binascii.unhexlify(s)).decode("utf-8")

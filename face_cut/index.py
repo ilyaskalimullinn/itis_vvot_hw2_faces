@@ -1,6 +1,7 @@
 from PIL import Image
 import uuid
 import json
+import os
 
 
 def handler(event, context):
@@ -32,6 +33,9 @@ def process_message(message: dict):
 
 
 def generate_face_image_path(original_img_key: str) -> str:
+    os.makedirs("/function/storage/bucket_faces/unknown", exist_ok=True)
     rand_hex = uuid.uuid4().hex
-    image_path = f"/function/storage/bucket_faces/{original_img_key}.{rand_hex}.jpg"
+    image_path = (
+        f"/function/storage/bucket_faces/unknown/{original_img_key}.{rand_hex}.jpg"
+    )
     return image_path

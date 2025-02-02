@@ -39,6 +39,13 @@ resource "yandex_function" "tg_bot_func" {
       bucket = yandex_storage_bucket.bucket_photos.bucket
     }
   }
+  mounts {
+    name = "bucket_faces"
+    mode = "rw"
+    object_storage {
+      bucket = yandex_storage_bucket.bucket_faces.bucket
+    }
+  }
 }
 
 resource "yandex_function_iam_binding" "tg_bot_biding_iam" {
